@@ -1,14 +1,16 @@
-import 'dotenv/config';
 import { text } from '@keystone-next/fields';
 import { list } from '@keystone-next/keystone/schema';
 import { cloudinaryImage } from '@keystone-next/cloudinary';
 
+const config = require('config');
+
+const cloudi = config.get('Cloudinary');
+
 export const cloudinary = {
-  cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-  apiKey: process.env.CLOUDINARY_KEY,
-  apiSecret: process.env.CLOUDINARY_SECRET,
+  cloudName: cloudi.NAME,
+  apiKey: cloudi.KEY,
+  apiSecret: cloudi.SECRET,
   folder: 'ecom',
-  secure: true,
 };
 
 export const ProductImage = list({
