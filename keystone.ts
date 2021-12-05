@@ -11,6 +11,7 @@ import { CartItem } from './schemas/CartItem';
 import 'dotenv/config';
 import { insertSeedData } from './seed-data';
 import { sendPasswordResetEmail } from './lib/mail';
+import { extendGraphqlSchema } from './mutations';
 
 const databaseURL =
   process.env.DATABASE_URL || 'mongodb://localhost/keystone-sick-fits-tutorial';
@@ -38,7 +39,7 @@ const { withAuth } = createAuth({
 });
 export default withAuth(
   config({
-    // @ts-ignore
+    // Extending the Custom Mutation of Add to Cart.
     server: {
       cors: {
         origin: [process.env.FRONTEND_URL],
@@ -61,6 +62,7 @@ export default withAuth(
       ProductImage,
       CartItem,
     }),
+    extendGraphqlSchema,
     ui: {
       // Show the UI only for poeple who pass this test
       isAccessAllowed: ({ session }) =>
