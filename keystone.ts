@@ -7,7 +7,10 @@ import {
 import { ProductImage } from './schemas/ProductImage';
 import { Product } from './schemas/Product';
 import { User } from './schemas/User';
+import { CartItem } from './schemas/CartItem';
 import 'dotenv/config';
+import { insertSeedData } from './seed-data';
+import { sendPasswordResetEmail } from './lib/mail';
 
 const databaseURL =
   process.env.DATABASE_URL || 'mongodb://localhost/keystone-sick-fits-tutorial';
@@ -25,8 +28,14 @@ const { withAuth } = createAuth({
     fields: ['name', 'email', 'password'],
     // TODO: Add in inital roles here
   },
+  passwordResetLink: {
+    async sendToken(args) {
+      // console.log(args);
+      // Send The Email
+      await sendPasswordResetEmail(args.token, args.identity);
+    },
+  },
 });
-
 export default withAuth(
   config({
     // @ts-ignore
@@ -40,12 +49,17 @@ export default withAuth(
       adapter: 'mongoose',
       url: databaseURL,
       // TODO: Add data seeding here
+      async onConnect(keystone) {
+        if (process.argv.includes('--seed-data'))
+          await insertSeedData(keystone);
+      },
     },
     lists: createSchema({
       // Schema items go in here
       User,
       Product,
       ProductImage,
+      CartItem,
     }),
     ui: {
       // Show the UI only for poeple who pass this test
